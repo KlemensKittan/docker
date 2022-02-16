@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Description: Uninstall Docker Engine and Docker Compose.
+# Written by : Klemens Kittan, klemens.kittan@uni-potsdam.de, 14.02.22
 
 clear
 

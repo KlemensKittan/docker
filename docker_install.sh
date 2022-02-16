@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Description: Install Docker Engine and Docker Compose on Debian.
+# Written by : Klemens Kittan, klemens.kittan@uni-potsdam.de, 14.02.22
 
 clear
 
