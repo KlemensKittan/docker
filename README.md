@@ -42,11 +42,25 @@ Remove container after it exits:
 
 Start a container and keep it running:
 
-    docker run -td [IMAGE]
+    docker run -d [IMAGE]
 
 Start a container and creates an interactive bash shell in the container:
 
     docker run -it [IMAGE]
+
+Start a container:
+
+    docker run --name nginx -p 8080:80 -d nginx:latest
+
+Options:
+- `--name`<br>
+  Assign a name to the container
+    
+- `-p`<br>
+  Publish a container's port(s) to the host
+
+- `-d`<br>
+  Run container in background and print container ID
 
 Execute command inside already running container:
 
@@ -136,7 +150,7 @@ Show changes to files (or directories) on a filesystem:
 
 List all images that are locally stored with the docker engine:
 
-    docker ls [image]
+    docker image ls
 
 Show the history of an image:
 
