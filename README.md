@@ -42,7 +42,7 @@ Remove container after it exits:
 
 Start a container and keep it running:
 
-    docker run -d [IMAGE]
+    docker run -dt [IMAGE]
 
 Start a container and creates an interactive bash shell in the container:
 
@@ -50,15 +50,17 @@ Start a container and creates an interactive bash shell in the container:
 
 Start a container:
 
-    docker run --name nginx -p 8080:80 -d nginx:latest
+    docker run -dt --name nginx -p 8080:80 nginx:latest
 
     Options:
+    -d, --detach
+    Run container in background and print container ID
     --name
     Assign a name to the container
-    -p
+    -p, --publish
     Publish a container's port(s) to the host
-    -d
-    Run container in background and print container ID
+    -t, --tty
+    Allocate a pseudo-TTY
 
 Execute command inside already running container:
 
