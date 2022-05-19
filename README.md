@@ -53,13 +53,13 @@ Start a container:
     docker run --name nginx -p 8080:80 -d nginx:latest
 
     Options:
-    - `--name`<br>
+    - --name
       Assign a name to the container
 
-    - `-p`<br>
+    - -p
       Publish a container's port(s) to the host
 
-    - `-d`<br>
+    - -d
       Run container in background and print container ID
 
 Execute command inside already running container:
@@ -240,8 +240,8 @@ It can be written in both shell and exec forms.
 
 ### ADD
 
-The ADD instruction copies new files, directories or remote file URLs from <src>
-and adds them to the filesystem of the image at the path <dest>.
+The ADD instruction copies new files, directories or remote file URLs from SRC
+and adds them to the filesystem of the image at the path DEST.
 
 In most cases if you’re using a URL, you’re downloading a zip file and are then
 using the RUN command to extract it. However, you might as well just use RUN
@@ -256,14 +256,14 @@ does with ADD rootfs.tar.gz /.
 
 ### COPY
 
-The COPY instruction copies new files or directories from <src> and adds them to
-the filesystem of the container at the path <dest>.
+The COPY instruction copies new files or directories from SRC and adds them to
+the filesystem of the container at the path DEST.
 
 ### ENV
 
-The ENV instruction sets the environment variable <key> to the value <value>.
-This value will be in the environment for all subsequent instructions in the
-build stage and can be replaced inline in many as well.
+The ENV instruction sets the environment variable to the value. This value will
+be in the environment for all subsequent instructions in the build stage and
+can be replaced inline in many as well.
 
     ENV MY_NAME="John Doe"
 
