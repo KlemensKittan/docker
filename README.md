@@ -52,15 +52,15 @@ Start a container:
 
     docker run --name nginx -p 8080:80 -d nginx:latest
 
-Options:
-- `--name`<br>
-  Assign a name to the container
-    
-- `-p`<br>
-  Publish a container's port(s) to the host
+    Options:
+    - `--name`<br>
+      Assign a name to the container
+        
+    - `-p`<br>
+      Publish a container's port(s) to the host
 
-- `-d`<br>
-  Run container in background and print container ID
+    - `-d`<br>
+      Run container in background and print container ID
 
 Execute command inside already running container:
 
