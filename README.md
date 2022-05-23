@@ -50,13 +50,11 @@ This Dockerfile is from the repository of Nigel Poulton.
     # Command for container to execute
     ENTRYPOINT [ "node", "app.js" ]
 
-**FROM**<br>
-The FROM instruction initializes a new build stage and sets the Base Image for
-subsequent instructions. As such, a valid Dockerfile must start with a FROM
+The **FROM** instruction initializes a new build stage and sets the Base Image
+for subsequent instructions. As such, a valid Dockerfile must start with a FROM
 instruction.
 
-**RUN**<br>
-The RUN instruction will execute any commands in a new layer on top of the
+The **RUN** instruction will execute any commands in a new layer on top of the
 current image and commit the results. The resulting committed image will be used
 for the next step in the Dockerfile.
 
@@ -65,13 +63,11 @@ It can be written in both shell and exec forms.
     RUN apt-get -y update
     RUN [“apt-get”, “install”, “vim”]
 
-**COPY**<br>
-The COPY instruction copies new files or directories and adds them to the
+The **COPY** instruction copies new files or directories and adds them to the
 filesystem of the container.
 
-**ADD**<br>
-The ADD instruction copies new files, directories or remote files (URLs) from
-and adds them to the filesystem of the image.
+The **ADD** instruction copies new files, directories or remote files (URLs)
+from and adds them to the filesystem of the image.
 
 In most cases if you're using a URL, you're downloading a zip file and are then
 using the RUN command to extract it. However, you might as well just use RUN
@@ -83,16 +79,14 @@ specific directory in your Docker image.
 
     ADD rootfs.tar.gz /
 
-**ENV**<br>
-The ENV instruction sets the environment variable to the value. This value will
-be in the environment for all subsequent instructions in the build stage and
-can be replaced inline in many as well.
+The **ENV** instruction sets the environment variable to the value. This value
+will be in the environment for all subsequent instructions in the build stage
+and can be replaced inline in many as well.
 
     ENV MY_NAME="John Doe"
 
-**CMD**<br>
-There can only be one CMD instruction in a Dockerfile. If you list more than one
-CMD then only the last CMD will take effect.
+There can only be one **CMD** instruction in a Dockerfile. If you list more than
+one CMD then only the last CMD will take effect.
 
 This Dockerfile uses Alpine Linux as a base and executes the echo command when
 a corresponding container is started.
@@ -108,8 +102,7 @@ the image.
 
     docker container run my-alpine echo "Hallo von der Konsole!"
 
-**ENTRYPOINT**<br>
-An ENTRYPOINT allows you to configure a container that will run as an
+An **ENTRYPOINT** allows you to configure a container that will run as an
 executable.
 
 ENTRYPOINT also specifies a command to be executed when a container starts.
