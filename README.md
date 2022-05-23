@@ -139,7 +139,7 @@ can be overridden with docker container run.
 
 ### docker-compose.yml
 
-This is a **declarative** manifest file descibing an app. This
+This is a **declarative** manifest file describing an app. This
 docker-compose.yml is from the repository of Nigel Poulton.
 
     version: "3.8"
