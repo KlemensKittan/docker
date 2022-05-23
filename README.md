@@ -20,6 +20,128 @@ Clean up:
     docker rm $(docker ps -aq)
     docker image rm hello-world:latest
 
+## Containerizing an App
+
+Docker can build images automatically by reading the instructions from a
+Dockerfile. A Dockerfile is a text document that contains all the commands a
+user could call on the command line to assemble an image. Using docker build
+users can create an automated build that executes several command-line
+instructions in succession.
+
+### Dockerfile
+
+This Dockerfile is from the repository of Nigel Poulton.
+
+    # Test web app
+    FROM node:current-alpine
+
+    # Create directory in container image for app code
+    RUN mkdir -p /usr/src/app
+
+    # Copy app code (.) to /usr/src/app in container image
+    COPY . /usr/src/app
+
+    # Set working directory context
+    WORKDIR /usr/src/app
+
+    # Install dependencies from packages.json
+    RUN npm install
+
+    # Command for container to execute
+    ENTRYPOINT [ "node", "app.js" ]
+
+**FROM**
+The FROM instruction initializes a new build stage and sets the Base Image for
+subsequent instructions. As such, a valid Dockerfile must start with a FROM
+instruction.
+
+**RUN**
+The RUN instruction will execute any commands in a new layer on top of the
+current image and commit the results. The resulting committed image will be used
+for the next step in the Dockerfile.
+
+It can be written in both shell and exec forms.
+
+    RUN apt-get -y update
+    RUN [“apt-get”, “install”, “vim”]
+
+**COPY**
+The COPY instruction copies new files or directories and adds them to the
+filesystem of the container.
+
+**ADD**
+The ADD instruction copies new files, directories or remote files (URLs) from
+and adds them to the filesystem of the image.
+
+In most cases if you're using a URL, you're downloading a zip file and are then
+using the RUN command to extract it. However, you might as well just use RUN
+with curl instead of ADD here so you chain everything into one RUN command to
+make a smaller Docker image.
+
+A valid use case for ADD is when you want to extract a local tar file into a
+specific directory in your Docker image.
+
+    ADD rootfs.tar.gz /
+
+**ENV**
+The ENV instruction sets the environment variable to the value. This value will
+be in the environment for all subsequent instructions in the build stage and
+can be replaced inline in many as well.
+
+    ENV MY_NAME="John Doe"
+
+**CMD**
+There can only be one CMD instruction in a Dockerfile. If you list more than one
+CMD then only the last CMD will take effect.
+
+This Dockerfile uses Alpine Linux as a base and executes the echo command when
+a corresponding container is started.
+
+    FROM alpine:3.9
+    CMD ["echo", "Hallo vom CMD!"]
+
+The special thing about CMD is that this specification can be overridden when a
+container is started. The syntax for starting a container is docker container
+`run [OPTIONS] IMAGE [COMMAND] [ARG...]`, so an optional command with arguments
+can be appended to the image name, which then overwrites the CMD statement of
+the image.
+
+    docker container run my-alpine echo "Hallo von der Konsole!"
+
+**ENTRYPOINT**
+An ENTRYPOINT allows you to configure a container that will run as an
+executable.
+
+ENTRYPOINT also specifies a command to be executed when a container starts.
+Unlike CMD, however, it is not overwritten by docker container run. This makes
+entrypoints well suited for containers that should always execute the same
+program.
+
+However, the power of entrypoints lies in the fact that a CMD statement is
+always appended to the ENTRYPOINT statement.
+
+    FROM alpine:3.9
+    ENTRYPOINT ["echo"]
+    CMD ["Hallo vom CMD"]
+
+However, CMD is still overwriteable. This means that I can overwrite the
+arguments for echo here.
+
+    docker container run my-alpine "Hallo von der Konsole"
+
+The entry point for a container, namely ENTRYPOINT, therefore always remains
+the same. So it is possible to set a fixed command as entrypoint for a
+container and additionally specify default arguments for it with CMD, which
+can be overridden with docker container run.
+
+### Create an image from a Dockerfile in the current directory
+
+    docker build -t [Docker Hub ID]/[Repo name]:[Image name] .
+
+### Start a container and keep it running
+
+    docker run -d --name [CONTAINER_NAME] -p 8080:80 [IMAGE]
+
 ## Commands
 
 ### Container management commands
@@ -42,7 +164,7 @@ Remove container after it exits:
 
 Start a container and keep it running:
 
-    docker run -dt [IMAGE]
+    docker run -d [IMAGE]
 
 Start a container and creates an interactive bash shell in the container:
 
@@ -50,7 +172,7 @@ Start a container and creates an interactive bash shell in the container:
 
 Start a container:
 
-    docker run -dt --name nginx -p 8080:80 nginx:latest
+    docker run -d --name [CONTAINER_NAME] -p 8080:80 [IMAGE]
 
     Options:
     -d, --detach
@@ -205,117 +327,6 @@ Connects a container to a network:
 Disconnect a container from a network:
 
     docker network disconnect [NETWORK] [CONTAINER]
-
-## Dockerfile
-
-Docker can build images automatically by reading the instructions from a
-Dockerfile. A Dockerfile is a text document that contains all the commands a
-user could call on the command line to assemble an image. Using docker build
-users can create an automated build that executes several command-line
-instructions in succession.
-
-### The format of the Dockerfile
-
-    # Comment
-    INSTRUCTION arguments
-
-### FROM
-
-The FROM instruction initializes a new build stage and sets the Base Image for
-subsequent instructions. As such, a valid Dockerfile must start with a FROM
-instruction.
-
-    FROM <image>[:<tag>]
-
-### RUN
-
-The RUN instruction will execute any commands in a new layer on top of the
-current image and commit the results. The resulting committed image will be used
-for the next step in the Dockerfile.
-
-It can be written in both shell and exec forms.
-
-    RUN apt-get -y update
-    RUN [“apt-get”, “install”, “vim”]
-
-### ADD
-
-The ADD instruction copies new files, directories or remote file URLs from SRC
-and adds them to the filesystem of the image at the path DEST.
-
-In most cases if you’re using a URL, you’re downloading a zip file and are then
-using the RUN command to extract it. However, you might as well just use RUN
-with curl instead of ADD here so you chain everything into one RUN command to
-make a smaller Docker image.
-
-A valid use case for ADD is when you want to extract a local tar file into a
-specific directory in your Docker image. This is exactly what the Alpine image
-does with ADD rootfs.tar.gz /.
-
-    ADD rootfs.tar.gz /
-
-### COPY
-
-The COPY instruction copies new files or directories from SRC and adds them to
-the filesystem of the container at the path DEST.
-
-### ENV
-
-The ENV instruction sets the environment variable to the value. This value will
-be in the environment for all subsequent instructions in the build stage and
-can be replaced inline in many as well.
-
-    ENV MY_NAME="John Doe"
-
-### CMD
-
-There can only be one CMD instruction in a Dockerfile. If you list more thanu
-one CMD then only the last CMD will take effect.
-
-The main purpose of a CMD is to provide defaults for an executing container.
-These defaults can include an executable, or they can omit the executable, in
-which case you must specify an ENTRYPOINT instruction as well.
-
-This Dockerfile uses Alpine Linux as a base and executes the echo command when
-a corresponding container is started.
-
-    FROM alpine:3.9
-    CMD ["echo", "Hallo vom CMD!"]
-
-The special thing about CMD is that this specification can be overridden when a
-container is started. The syntax for starting a container is docker container
-`run [OPTIONS] IMAGE [COMMAND] [ARG...]`, so an optional command with arguments
-can be appended to the image name, which then overwrites the CMD statement of
-the image.
-
-    docker container run my-alpine echo "Hallo von der Konsole!"
-
-### ENTRYPOINT
-
-An ENTRYPOINT allows you to configure a container that will run as an
-executable.
-
-ENTRYPOINT also specifies a command to be executed when a container starts.
-Unlike CMD, however, it is not overwritten by docker container run. This makes
-entrypoints well suited for containers that should always execute the same
-program.
-
-However, the power of entrypoints lies in the fact that a CMD statement is
-always appended to the ENTRYPOINT statement.
-
-    FROM alpine:3.9
-    ENTRYPOINT ["echo"]
-    CMD ["Hallo vom CMD"]
-
-However, CMD is still overwriteable. This means that I can overwrite the
-arguments for echo here.
-
-    docker container run my-alpine "Hallo von der Konsole"
-
-The entry point for a container, namely ENTRYPOINT, therefore always remains
-the same. So it is possible to set a fixed command as entrypoint for a
-container and additionally specify default arguments for it with CMD, which
-can be overridden with docker container run.
 
 ## Resources
 
