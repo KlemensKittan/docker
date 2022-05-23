@@ -135,6 +135,46 @@ can be overridden with docker container run.
 
     docker run -d --name [CONTAINER_NAME] -p 8080:80 [IMAGE]
 
+## Multi-container Apps with Docker Compose
+
+### docker-compose.yml
+
+This is a **declarative** manifest file descibing an app. This
+docker-compose.yml is from the repository of Nigel Poulton.
+
+    version: "3.8"
+    services:
+      web-fe:
+        build: .
+        command: python app.py
+        ports:
+          - target: 5000
+            published: 5000
+        networks:
+          - counter-net
+        volumes:
+          - type: volume
+            source: counter-vol
+            target: /code
+      redis:
+        image: "redis:alpine"
+        networks:
+          counter-net:
+
+    networks:
+      counter-net:
+
+    volumes:
+      counter-vol:
+
+### Start a App and keep it running
+
+    docker compose up -d
+
+### Stop running App
+
+    docker compose down
+
 ## Commands
 
 ### Container management commands
