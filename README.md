@@ -36,13 +36,13 @@ This Dockerfile is from the repository of Nigel Poulton.
     FROM node:current-alpine
 
     # Create directory in container image for app code
-    RUN mkdir -p /usr/src/app
-
-    # Copy app code (.) to /usr/src/app in container image
-    COPY . /usr/src/app
+    RUN mkdir -p /app
 
     # Set working directory context
-    WORKDIR /usr/src/app
+    WORKDIR /app
+
+    # Copy app code (.) to /app in container image
+    COPY . .
 
     # Install dependencies from packages.json
     RUN npm install
@@ -133,7 +133,7 @@ can be overridden with docker container run.
 
 ### Start a container and keep it running
 
-    docker run -d --name [CONTAINER_NAME] -p 8080:80 [IMAGE]
+    docker run --name [CONTAINER_NAME] --rm -d -p 8080:80 [IMAGE]
 
 ## Multi-container Apps with Docker Compose
 
@@ -144,22 +144,31 @@ docker-compose.yml is from the repository of Nigel Poulton.
 
     version: "3.8"
     services:
-      web-fe:
-        build: .
-        command: python app.py
-        ports:
-          - target: 5000
-            published: 5000
-        networks:
-          - counter-net
-        volumes:
-          - type: volume
-            source: counter-vol
-            target: /code
       redis:
         image: "redis:alpine"
         networks:
           counter-net:
+
+      web-fe:
+        build: ./web-fe
+        # build:
+        #   context: ./web-fe
+        #   dockerfile: Dockerfile
+        ports:
+          - '80:80'
+        networks:
+          - counter-net
+        volumes:
+          - counter-vol:/app/logs
+          - ./web-fe:/app
+          - /app/node_modules
+        # environment:
+        # - ROOT_USERNAME: max
+        # - ROOT_PASSWORD: secret
+        env_file:
+          - ./env/web-fe.env
+        depends_on:
+          - redis
 
     networks:
       counter-net:
@@ -174,6 +183,23 @@ docker-compose.yml is from the repository of Nigel Poulton.
 ### Stop running App
 
     docker compose down
+
+## Example
+
+### Create a folder and add a sample index.html file
+
+    mkdir ../nginx
+    cd ../nginx
+    echo "<h1>Hello World from NGINX!!</h1>" > index.html
+
+### Create a Dockerfile
+
+    FROM nginx:alpine
+    COPY . /usr/share/nginx/html
+
+### Build image
+
+    docker build --tag nginx-helloworld:latest .
 
 ## Commands
 
@@ -193,19 +219,19 @@ Run a command in a new container:
 
 Remove container after it exits:
 
-    docker run --rm [IMAGE]
+    docker run --name [CONTAINER_NAME] --rm [IMAGE]
 
 Start a container and keep it running:
 
-    docker run -d [IMAGE]
+    docker run --name [CONTAINER_NAME] -d [IMAGE]
 
 Start a container and creates an interactive bash shell in the container:
 
-    docker run -it [IMAGE]
+    docker run --name [CONTAINER_NAME] -it [IMAGE]
 
 Start a container:
 
-    docker run -d --name [CONTAINER_NAME] -p 8080:80 [IMAGE]
+    docker run --name [CONTAINER_NAME] --rm -d -p 8080:80 [IMAGE]
 
     Options:
     -d, --detach
